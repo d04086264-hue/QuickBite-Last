@@ -1,0 +1,72 @@
+package com.cts.controller;
+
+import java.util.List;
+import com.cts.dto.request.CategoryRequestDTO;
+import com.cts.dto.response.CategoryResponseDTO;
+import io.swagger.v3.oas.annotations.Operation;
+import jakarta.validation.Valid;
+import lombok.AllArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+import com.cts.service.CategoryService;
+
+
+@RestController
+@RequestMapping("/api/v1/category")
+@AllArgsConstructor
+public class CategoryController {
+
+
+    private final CategoryService categoryService;
+
+
+    @PostMapping("/register")
+    @Operation( summary = "Adding a Category", description = "Adding a Category" )
+    public ResponseEntity<CategoryResponseDTO> addCategory(@Valid @RequestBody CategoryRequestDTO requestCategory) {
+        CategoryResponseDTO responseCategory = categoryService.addCategory(requestCategory);
+        return new ResponseEntity<>(responseCategory, HttpStatus.CREATED);
+    }
+
+    @GetMapping
+    @Operation( summary = "Getting all Category", description = "Getting all Category" )
+    public ResponseEntity<List<CategoryResponseDTO>> getAllCategories() {
+        List<CategoryResponseDTO> responseCategorieslist = categoryService.getAllCategories();
+        return new ResponseEntity<>(responseCategorieslist, HttpStatus.OK);
+    }
+
+    @GetMapping("/id")
+    @Operation( summary = "Getting Category by ID", description = "Getting Category by ID" )
+    public ResponseEntity<CategoryResponseDTO> getCategoryById(@RequestParam int id) {
+        CategoryResponseDTO responseCategory = categoryService.getCategoryById(id);
+        if (responseCategory != null) {
+            return new ResponseEntity<>(responseCategory, HttpStatus.OK);
+        }
+        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    }
+
+    @GetMapping("/categoryname")
+    @Operation( summary = "Getting Category by Name", description = "Getting Category by Name" )
+    public ResponseEntity<CategoryResponseDTO> getCategoryByName(@RequestParam  String name) {
+        CategoryResponseDTO responseCategory = categoryService.getCategoryByName(name);
+        if (responseCategory != null) {
+            return new ResponseEntity<>(responseCategory, HttpStatus.OK);
+        }
+        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    }
+    @PutMapping("/update")
+    @Operation( summary = "Updating a Category by id", description = "Updating a Category with name and img in request body" )
+    public ResponseEntity<CategoryResponseDTO> updateCategoryById(
+            @RequestParam int id, 
+            @Valid @RequestBody CategoryRequestDTO requestCategory) {
+        CategoryResponseDTO responseCategory = categoryService.updateCategory(id, requestCategory);
+        return new ResponseEntity<>(responseCategory, HttpStatus.OK);
+    }
+
+    @DeleteMapping("/delete")
+    @Operation( summary = "Deleting a Category by id", description = "Deleting a Category" )
+    public ResponseEntity<Void> deleteCategory(@RequestParam int id) {
+        categoryService.deleteCategory(id);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
+}
